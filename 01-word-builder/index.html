@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/themes.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="../shared/themes.js"></script>
+    <script src="../shared/store.js"></script>
+    <script src="../shared/ui.js"></script>
+    <script>
+        // No player yet? The hub is where players are made.
+        if (!Store.active()) location.replace("../index.html");
+        UI.applyTheme();
+    </script>
+</head>
+<body>
+    <!-- Level map -->
+    <div id="map-screen" class="page screen">
+        <div class="topbar">
+            <a href="../index.html" class="icon-btn" aria-label="All games">🏠</a>
+            <div class="who">
+                <span id="who-avatar"></span>
+                <span id="who-name"></span>
+                <span class="who-stars" id="who-stars"></span>
+            </div>
+            <button class="icon-btn case-btn" aria-label="Switch uppercase or lowercase">Aa</button>
+        </div>
+        <h1 class="map-title">🧩 Word Builder</h1>
+        <div id="islands"></div>
+    </div>
+
+    <!-- Building a word -->
+    <div id="play-screen" class="page screen hidden">
+        <div class="topbar">
+            <button id="quit-btn" class="icon-btn" aria-label="Back to map">🗺️</button>
+            <div id="progress" class="progress" aria-label="Progress"></div>
+            <button class="icon-btn case-btn" aria-label="Switch uppercase or lowercase">Aa</button>
+        </div>
+
+        <div class="stage">
+            <button id="card" class="card" aria-label="Hear the word again">
+                <div class="card-inner">
+                    <div class="card-face card-front">
+                        <span class="mystery">❓</span>
+                        <span class="listen">🔊</span>
+                    </div>
+                    <div class="card-face card-back">
+                        <img id="card-img" alt="">
+                        <span id="card-word" class="card-word"></span>
+                    </div>
+                </div>
+            </button>
+
+            <button id="hear-btn" class="hear-btn" aria-label="Hear the word again">🔊 Hear it</button>
+
+            <div id="slots" class="slots"></div>
+            <div id="tray" class="tray"></div>
+        </div>
+    </div>
+
+    <!-- Level complete -->
+    <div id="end-screen" class="modal-backdrop hidden">
+        <div class="modal end-modal" role="dialog" aria-labelledby="end-title">
+            <div class="end-stars" id="end-stars"></div>
+            <h2 id="end-title"></h2>
+            <p id="end-sub" class="end-sub"></p>
+            <div class="modal-actions">
+                <button id="next-btn" class="big-btn">Next level ▶</button>
+                <button id="again-btn" class="big-btn secondary">↻ Play again</button>
+                <button id="map-btn" class="big-btn secondary">🗺️ Map</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="levels.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

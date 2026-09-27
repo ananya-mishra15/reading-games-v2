@@ -1,0 +1,372 @@
+/* ---------- Layout ---------- */
+
+.page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 14px 16px 40px;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.who {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+#who-avatar { font-size: 1.8rem; }
+#who-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.who-stars { color: var(--ink-dim); white-space: nowrap; }
+
+.map-title {
+    margin: 14px 0 6px;
+    text-align: center;
+    font-size: clamp(2rem, 7vw, 2.8rem);
+    color: var(--accent);
+    text-shadow: 0 3px 0 var(--line);
+}
+
+/* Letter case: tiles and words follow the player's choice. */
+.tile, .card-word { text-transform: lowercase; }
+body.upper .tile, body.upper .card-word { text-transform: uppercase; }
+
+/* ---------- Map ---------- */
+
+.island {
+    margin-top: 22px;
+    padding: 16px 12px 8px;
+    background: var(--panel);
+    border-radius: 28px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.island h2 {
+    margin: 0;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.island .island-emoji {
+    position: absolute;
+    right: -10px;
+    bottom: -20px;
+    font-size: 9rem;
+    opacity: 0.1;
+    pointer-events: none;
+}
+
+.trail { position: relative; }
+
+.trail svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.trail path {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 2 18;
+}
+
+.trail path.open { stroke: var(--accent); stroke-dasharray: none; opacity: 0.55; }
+
+.node {
+    position: absolute;
+    transform: translateX(-50%);
+    width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: none;
+    background: none;
+    padding: 0;
+}
+
+.node .circle {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+    border: 4px solid var(--panel);
+}
+
+.node.done .circle { background: var(--accent-2); }
+
+.node.locked { cursor: default; }
+.node.locked .circle {
+    background: var(--slot);
+    color: var(--ink-dim);
+    font-size: 1.6rem;
+    box-shadow: none;
+    border-color: var(--line);
+}
+
+.node.current .circle { animation: pulse 1.4s ease-in-out infinite; }
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.node .label {
+    margin-top: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    background: var(--panel);
+    border-radius: 999px;
+    padding: 0 8px;
+}
+
+.node .stars { font-size: 1.05rem; letter-spacing: 1px; line-height: 1.2; }
+.star { color: var(--line); }
+.star.on { color: #fcc419; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25); }
+
+/* ---------- Play ---------- */
+
+.progress {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.progress .dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 3px solid var(--line);
+    background: var(--panel);
+}
+
+.progress .dot.done { background: var(--accent); border-color: var(--accent); }
+.progress .dot.now { border-color: var(--accent); transform: scale(1.25); }
+
+.stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    padding-top: 16px;
+}
+
+/* The ❓ card flips over to show the picture once the word is built. */
+.card {
+    width: min(200px, 50vw);
+    aspect-ratio: 1;
+    border: none;
+    background: none;
+    padding: 0;
+    perspective: 900px;
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.3, 1.4, 0.6, 1);
+    transform-style: preserve-3d;
+}
+
+.card.flipped .card-inner { transform: rotateY(180deg); }
+
+.card-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    border: 5px solid var(--line);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-front .mystery { font-size: 5rem; line-height: 1; }
+.card-front .listen { font-size: 1.6rem; margin-top: 6px; }
+
+.card-back {
+    transform: rotateY(180deg);
+    border-color: var(--good);
+}
+
+.card-back img { width: 70%; height: 70%; object-fit: contain; }
+.card-word { font-size: 1.8rem; font-weight: 700; line-height: 1; }
+
+.hear-btn {
+    border: 3px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 22px;
+    background: var(--panel);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.slots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 6px 0;
+}
+
+.slot {
+    width: var(--t, 80px);
+    height: var(--t, 80px);
+    border-radius: 18px;
+    border: 4px dashed var(--line);
+    background: var(--slot);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s ease;
+}
+
+.slot.filled { border-style: solid; border-color: var(--good); }
+.slot.miss { animation: miss 0.45s ease; }
+.slot.done { animation: hop 0.5s ease; }
+.slot.say { animation: say 0.45s ease; }
+
+@keyframes miss {
+    0%, 100% { border-color: var(--line); }
+    40% { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 20%, var(--slot)); }
+}
+
+@keyframes say {
+    0%, 100% { transform: scale(1); }
+    40% { transform: scale(1.18); border-color: var(--accent-2); box-shadow: 0 0 0 6px var(--accent-2); }
+}
+
+@keyframes hop {
+    0%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-16px); }
+}
+
+.tray {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    min-height: var(--t, 80px);
+    margin-top: 6px;
+    padding: 14px;
+    border-radius: 24px;
+    background: color-mix(in srgb, var(--panel) 55%, transparent);
+    max-width: 100%;
+}
+
+.tile, .ghost {
+    width: var(--t, 80px);
+    height: var(--t, 80px);
+    flex: none;
+}
+
+.ghost { visibility: hidden; }
+
+.tile {
+    border: none;
+    border-radius: 18px;
+    background: var(--tile);
+    color: var(--tile-ink);
+    font-size: calc(var(--t, 80px) * 0.52);
+    font-weight: 600;
+    line-height: 1;
+    padding: 0;
+    box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+    touch-action: none;
+    position: relative;
+}
+
+.tile.dragging {
+    z-index: 30;
+    box-shadow: 0 14px 24px rgba(0, 0, 0, 0.25);
+    cursor: grabbing;
+}
+
+.slot .tile {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    box-shadow: none;
+    cursor: default;
+}
+
+.tile.wiggle { animation: wiggle 0.4s ease; }
+
+@keyframes wiggle {
+    0%, 100% { translate: 0; }
+    20% { translate: -10px; }
+    40% { translate: 10px; }
+    60% { translate: -6px; }
+    80% { translate: 6px; }
+}
+
+.tile.glow { animation: glow 1s ease-in-out infinite; }
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2), 0 0 0 0 var(--accent-2); }
+    50% { box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2), 0 0 0 8px var(--accent-2); }
+}
+
+/* Rainbow theme: every tile a different colour (set once, so it keeps it in a slot). */
+[data-theme="rainbow"] .tile[data-c="0"] { background: #ff8787; }
+[data-theme="rainbow"] .tile[data-c="1"] { background: #ffc078; }
+[data-theme="rainbow"] .tile[data-c="2"] { background: #ffe066; }
+[data-theme="rainbow"] .tile[data-c="3"] { background: #8ce99a; }
+[data-theme="rainbow"] .tile[data-c="4"] { background: #74c0fc; }
+[data-theme="rainbow"] .tile[data-c="5"] { background: #b197fc; }
+
+/* ---------- Level complete ---------- */
+
+.end-modal { text-align: center; }
+
+.end-stars {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    font-size: 4rem;
+    line-height: 1.1;
+    margin-bottom: 6px;
+}
+
+.end-stars .star { opacity: 0.5; }
+.end-stars .star.on { opacity: 1; animation: star-pop 0.5s cubic-bezier(0.3, 1.8, 0.5, 1) both; }
+
+@keyframes star-pop {
+    from { transform: scale(0) rotate(-40deg); }
+    to { transform: scale(1) rotate(0); }
+}
+
+.end-sub { margin: 0 0 8px; color: var(--ink-dim); font-size: 1.15rem; }
+
+@media (max-width: 420px) {
+    .node { width: 100px; }
+    .node .circle { width: 66px; height: 66px; font-size: 1.7rem; }
+    .big-btn { padding: 12px 22px; font-size: 1.15rem; }
+}

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Games</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="shared/themes.css">
+    <script src="shared/themes.js"></script>
+    <script src="shared/store.js"></script>
+    <script src="shared/ui.js"></script>
+    <script>UI.applyTheme();</script>
+    <style>
+        .page {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 20px 16px 48px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .profile-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 3px solid var(--line);
+            border-radius: 999px;
+            padding: 6px 16px 6px 8px;
+            background: var(--panel);
+            font-size: 1.1rem;
+            font-weight: 600;
+            max-width: 60vw;
+        }
+
+        .profile-chip .av { font-size: 1.8rem; line-height: 1; }
+        .profile-chip .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        h1 {
+            margin: 18px 0 4px;
+            text-align: center;
+            font-size: clamp(2.2rem, 8vw, 3.4rem);
+            color: var(--accent);
+            text-shadow: 0 3px 0 var(--line);
+        }
+
+        .tagline {
+            margin: 0 0 28px;
+            text-align: center;
+            color: var(--ink-dim);
+            font-size: 1.15rem;
+        }
+
+        h2.section {
+            margin: 32px 0 14px;
+            font-size: 1.5rem;
+        }
+
+        .games {
+            display: grid;
+            gap: 18px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+
+        .game {
+            display: block;
+            padding: 22px 20px;
+            border-radius: var(--radius);
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            border-top: 8px solid var(--accent);
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.15s ease;
+        }
+
+        .game:hover, .game:focus-visible { transform: translateY(-4px); }
+
+        .game .emoji { font-size: 3rem; line-height: 1; display: block; margin-bottom: 8px; }
+        .game h3 { margin: 0 0 6px; font-size: 1.5rem; }
+        .game p { margin: 0; color: var(--ink-dim); }
+        .game .stars { margin-top: 12px; font-weight: 600; color: var(--ink); }
+
+        .game.soon {
+            border-top-color: var(--line);
+            background: transparent;
+            box-shadow: none;
+            border: 3px dashed var(--line);
+            border-top-width: 8px;
+            color: var(--ink-dim);
+        }
+
+        .game.soon:hover { transform: none; }
+
+        /* Theme picker: same card-with-swatch idea as Learn_Python's shop. */
+        .themes {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        }
+
+        .theme-card {
+            border: 4px solid transparent;
+            border-radius: 18px;
+            padding: 10px;
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            text-align: center;
+            position: relative;
+        }
+
+        .theme-card.selected { border-color: var(--accent); }
+
+        .theme-card.selected::after {
+            content: "✓";
+            position: absolute;
+            top: -12px;
+            right: -10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-swatch {
+            display: flex;
+            height: 54px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+        }
+
+        .theme-swatch > i { flex: 1; }
+
+        .theme-name {
+            margin-top: 8px;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .theme-decor { font-size: 1.1rem; letter-spacing: 2px; }
+
+        /* Profile modal */
+        .profiles {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            margin-bottom: 16px;
+        }
+
+        .profile-btn {
+            border: 4px solid var(--line);
+            border-radius: 18px;
+            padding: 12px 6px;
+            background: var(--slot);
+            overflow: hidden;
+        }
+
+        .profile-btn.selected { border-color: var(--accent); }
+        .profile-btn .av { font-size: 2.6rem; display: block; line-height: 1.1; }
+        .profile-btn .nm {
+            display: block;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .new-form label { display: block; font-weight: 600; margin: 10px 0 6px; }
+
+        .new-form input {
+            width: 100%;
+            font: inherit;
+            font-size: 1.3rem;
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: 3px solid var(--line);
+            background: var(--slot);
+            color: var(--ink);
+        }
+
+        .avatars {
+            display: grid;
+            gap: 8px;
+            grid-template-columns: repeat(8, 1fr);
+        }
+
+        .avatar-opt {
+            aspect-ratio: 1;
+            font-size: 1.7rem;
+            border: 3px solid transparent;
+            border-radius: 14px;
+            background: var(--slot);
+            padding: 0;
+        }
+
+        .avatar-opt.selected { border-color: var(--accent); background: var(--panel); }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .grownups {
+            margin-top: 18px;
+            font-size: 0.95rem;
+            color: var(--ink-dim);
+        }
+
+        .grownups .toggle-row { font-size: 1rem; color: var(--ink); }
+
+        @media (max-width: 420px) {
+            .avatars { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: var(--ink-dim);
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="topbar">
+            <button id="profile-chip" class="profile-chip" aria-label="Change player">
+                <span class="av" id="chip-avatar">🙂</span>
+                <span class="nm" id="chip-name">Player</span>
+            </button>
+            <button id="settings-btn" class="icon-btn" aria-label="Settings">⚙️</button>
+        </div>
+
+        <h1>Reading Games</h1>
+        <p class="tagline">Hear it, build it, read it!</p>
+
+        <h2 class="section">🎮 Games</h2>
+        <div class="games">
+            <a class="game" href="01-word-builder/">
+                <span class="emoji">🧩</span>
+                <h3>Word Builder</h3>
+                <p>Listen to a word, then build it from letter tiles.</p>
+                <div class="stars" id="wb-stars"></div>
+            </a>
+            <div class="game soon">
+                <span class="emoji">🎁</span>
+                <h3>More coming soon</h3>
+                <p>New games will appear here.</p>
+            </div>
+        </div>
+
+        <h2 class="section">🎨 Pick your theme</h2>
+        <div class="themes" id="themes"></div>
+
+        <footer>Best on a tablet · sound on 🔊</footer>
+    </div>
+
+    <!-- Who's playing? -->
+    <div id="profile-modal" class="modal-backdrop hidden">
+        <div class="modal" role="dialog" aria-labelledby="profile-title">
+            <h2 id="profile-title">Who's playing?</h2>
+            <div class="profiles" id="profile-list"></div>
+
+            <div class="new-form hidden" id="new-form">
+                <label for="new-name">Your name</label>
+                <input id="new-name" maxlength="16" autocomplete="off" placeholder="Type your name">
+                <label>Pick your buddy</label>
+                <div class="avatars" id="avatar-grid"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button id="add-btn" class="big-btn secondary">＋ New player</button>
+                <button id="create-btn" class="big-btn hidden">Let's go!</button>
+                <button id="profile-close" class="big-btn secondary hidden">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings -->
+    <div id="settings-modal" class="modal-backdrop hidden">
+        <div class="modal" role="dialog" aria-labelledby="settings-title">
+            <h2 id="settings-title">⚙️ Settings</h2>
+
+            <div class="toggle-row">
+                <span>🔊 Sound</span>
+                <button id="sound-toggle" class="toggle" aria-pressed="true">On</button>
+            </div>
+            <div class="toggle-row">
+                <span>🔤 Letters</span>
+                <button id="case-toggle" class="toggle" aria-pressed="true">ABC</button>
+            </div>
+
+            <div class="grownups">
+                <strong>For grown-ups</strong> — hold a button for 3 seconds.
+                <div class="toggle-row">
+                    <span id="unlock-label">Unlock all levels</span>
+                    <button id="unlock-btn" class="hold-btn"><span id="unlock-text">Hold to unlock</span></button>
+                </div>
+                <div class="toggle-row">
+                    <span>Delete this player</span>
+                    <button id="delete-btn" class="hold-btn"><span>Hold to delete</span></button>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button id="settings-close" class="big-btn">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="hub.js"></script>
+</body>
+</html>
